@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>To Do List</title>
+  </head>
+  <body>
+    <main>
+      <div class="wrapper">
+        <div class="todo-list">
+          <div class="todo-list__add">
+            <div class="todo-list__input">
+              <input class="todo-list__input-value" type="text" />
+            </div>
+            <div class="todo-list__btn">
+              <button class="todo-list__button" onclick="onClickButton()">
+                Добавить
+              </button>
+              <button class="todo-list__del" onclick="delAllTasks()">
+                Удалить все
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="todo__items">
+          <!-- <div class="todo__item">
+            <div class="todo__text">Погулять с собакой</div>
+            <div class="todo__buttons">
+              <input class="todo__complete" type="checkbox" />
+              <button class="todo__changed">Редактировать</button>
+              <button class="todo__delete">Удалить</button>
+            </div>
+          </div>
+          <div class="todo__item">
+            <div class="todo__text">Погулять с собакой</div>
+            <div class="todo__buttons">
+              <input class="todo__complete" type="checkbox" />
+              <button class="todo__changed">Редактировать</button>
+              <button class="todo__delete">Удалить</button>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
