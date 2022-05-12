@@ -30,7 +30,7 @@ const addTask = async () => {
       })
     })
 
-    await resp.json().then((resp) => {
+    await resp.json().then(resp => {
       allTasks.push(resp);
       render();
 
@@ -50,71 +50,71 @@ const render = () => {
   };
 
   allTasks
-    .sort((a,b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1: 0)
-    .map((el) => {
-      const {text: textElement, isCheck: completed, _id: id} = el;
+    .sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0)
+    .forEach(el => {
+      const {text, isCheck, _id} = el;
 
       const block = document.createElement("div");
-      const text = document.createElement("div");
+      const textInTask = document.createElement("div");
       const buttons = document.createElement("div");
       const check = document.createElement("input");
-      const del = document.createElement("button");
+      const deleteBtn = document.createElement("button");
       const edit = document.createElement("button");
-      block.id = `block-${id}`;
-      buttons.id = `buttons-${id}`;
+      block.id = `block-${_id}`;
+      buttons.id = `buttons-${_id}`;
 
       buttons.classList.add("todo__buttons");
 
       check.type = "checkbox";
-      check.checked = completed;
+      check.checked = isCheck;
       check.classList.add("todo__complete");
 
       edit.classList.add("todo__changed");
       edit.innerText = "Редактировать";
 
-      del.classList.add("todo__delete");
-      del.innerText = "Удалить";
+      deleteBtn.classList.add("todo__delete");
+      deleteBtn.innerText = "Удалить";
 
-      text.classList.add("todo__text");
-      text.innerText = textElement;
+      textInTask.classList.add("todo__text");
+      textInTask.innerText = text;
 
       list.appendChild(block);
-      block.appendChild(text);
+      block.appendChild(textInTask);
       block.appendChild(buttons);
       buttons.appendChild(check);
       buttons.appendChild(edit);
-      buttons.appendChild(del);
+      buttons.appendChild(deleteBtn);
 
-      block.className = completed ? "todo__item checked" : "todo__item";
+      block.className = isCheck ? "todo__item checked" : "todo__item";
 
-      if (completed) {
+      if (isCheck) {
         buttons.removeChild(edit);
       } else {
         buttons.appendChild(check);
         buttons.appendChild(edit);
-        buttons.appendChild(del);
+        buttons.appendChild(deleteBtn);
       }
 
       edit.onclick = () => {
-        onChangeValue(id, textElement);
+        onChangeValue(_id, text);
         buttons.removeChild(edit);
       };
 
       check.onclick = () => {
-        onChangeCheckbox(id, completed);
+        onChangeCheckbox(_id, isCheck);
       };
 
-      del.onclick = () => {
-        onDeleteTask(id);
+      deleteBtn.onclick = () => {
+        onDeleteTask(_id);
       };
     });
 };
 
-const onChangeValue = (index, textElement) => {
+const onChangeValue = (id, textElement) => {
   const inputTask = document.createElement("input");
   const doneButton = document.createElement("button");
-  const block = document.getElementById(`block-${index}`);
-  const buttons = document.getElementById(`buttons-${index}`);
+  const block = document.getElementById(`block-${id}`);
+  const buttons = document.getElementById(`buttons-${id}`);
 
   inputTask.type = "text";
   inputTask.value = textElement;
@@ -124,32 +124,32 @@ const onChangeValue = (index, textElement) => {
   block.appendChild(inputTask);
   buttons.appendChild(doneButton);
 
-  onchange(inputTask, index);
+  doneButton.onclick = () => {
+    enterChange(inputTask, id)
+  };
 
 };
 
-const onchange = (inputTask, index) => {
-  inputTask.onchange = async(event) => {
-    const resp = await fetch(`${url}/updateTask`, {
-      method: 'PATCH',
-      headers: headersOption,
-      body: JSON.stringify({
-        text: inputTask.value,
-        _id: index
-      })
-    });
+const enterChange = async(inputTask, id) => {
+  const resp = await fetch(`${url}/updateTask`, {
+    method: 'PATCH',
+    headers: headersOption,
+    body: JSON.stringify({
+      text: inputTask.value,
+      _id: id
+    })
+  });
 
-    if(resp) {
-      allTasks = allTasks.map(item => {
-        const newTask = {...item};
-        if(item._id === index) {
-          newTask.text = event.target.value;
-        }
-        return newTask; 
-      });
-      render();
-    }
-  };
+  if(resp) {
+    allTasks = allTasks.map(item => {
+      const newTask = {...item};
+      if(item._id === id) {
+        newTask.text = inputTask.value;
+      }
+      return newTask; 
+    });
+  }
+  render();
 }
 
 const onChangeCheckbox = async (idItem, isChecked) => {
@@ -157,8 +157,8 @@ const onChangeCheckbox = async (idItem, isChecked) => {
     method: 'PATCH',
     headers: headersOption,
     body: JSON.stringify({
-    _id: idItem,
-    isCheck: !isChecked
+      _id: idItem,
+      isCheck: !isChecked
     })
   });
 
@@ -170,25 +170,17 @@ const onChangeCheckbox = async (idItem, isChecked) => {
       }
       return newTask;
     });
-    render();
   };
+  render();
 };
 
-const onDeleteTask = async (id) => {
-  const resp = await fetch(`${url}/deleteTask?id=${id}`, {
-    method: 'DELETE',
-    headers: headersOption
-  })
-
-  if(resp){
-    allTasks.forEach((item) => {
-      if(item._id === id){
-        allTasks.splice(id, 1);
-      }
-      return allTasks;
-    })
+const onDeleteTask = async id => { 
+  const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
+    method: 'DELETE', 
+  });   
+  const response = await resp.json();
+  allTasks = response;
   render();
-  }
 };
 
 const deleteAllTasks = async () => {
@@ -202,6 +194,6 @@ const deleteAllTasks = async () => {
       allTasks.splice(0, allTasks.length);
       return allTasks;
     })
+  };
   render();
-  }
 };
