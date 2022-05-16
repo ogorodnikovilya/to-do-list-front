@@ -130,6 +130,9 @@ const onChangeValue = (id, text) => {
 
 };
 
+// Используются PATCH-запросы потому, что PATCH-запросы позволяют изменять отдельные поля в объекте, не меняя те поля, которые мы не передаем, в случае же
+// PUT-запроса, если мы не передаем какое-то из полей в очередном запросе, то это поле будет удалено из БД
+
 const saveChange = async(inputTask, id) => {
   const resp = await fetch(`${url}/updateTask`, {
     method: 'PATCH',
@@ -163,9 +166,14 @@ const onChangeCheckbox = async (idItem, isChecked) => {
   });
 
   if(resp) {
-    allTasks = []
+    allTasks = allTasks.map(item => {
+      const newTask = {...item};
+      if(item._id === idItem) {
+        newTask.isCheck = !isChecked;
+      }
       return newTask;
-    };
+    });
+  };
   render();
 };
 
@@ -182,13 +190,10 @@ const deleteAllTasks = async () => {
   const resp = await fetch(`${url}/deleteAllTask`, {
     method: 'DELETE',
     headers: headersOption
-  })
+  });
   
   if(resp){
-    allTasks.forEach(item => {
-      allTasks.splice(0, allTasks.length);
-      return allTasks;
-    })
+    allTasks = [];
   };
   render();
 };
