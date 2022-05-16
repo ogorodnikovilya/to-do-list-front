@@ -80,6 +80,7 @@ body {
 .todo__item:last-child{
   margin: 5% 0 10% 0;
 }
+
 .todo__buttons {
   display: flex;
   margin: 0 5% 0 0;

@@ -28,7 +28,7 @@ const addTask = async () => {
         text: textTask,
         isCheck: false
       })
-    })
+    });
 
     await resp.json().then(resp => {
       allTasks.push(resp);
@@ -110,14 +110,14 @@ const render = () => {
     });
 };
 
-const onChangeValue = (id, textElement) => {
+const onChangeValue = (id, text) => {
   const inputTask = document.createElement("input");
   const doneButton = document.createElement("button");
   const block = document.getElementById(`block-${id}`);
   const buttons = document.getElementById(`buttons-${id}`);
 
   inputTask.type = "text";
-  inputTask.value = textElement;
+  inputTask.value = text;
   doneButton.innerText = "Ок";
   doneButton.classList.add("todo__buttons");
 
@@ -125,12 +125,12 @@ const onChangeValue = (id, textElement) => {
   buttons.appendChild(doneButton);
 
   doneButton.onclick = () => {
-    enterChange(inputTask, id)
+    saveChange(inputTask, id)
   };
 
 };
 
-const enterChange = async(inputTask, id) => {
+const saveChange = async(inputTask, id) => {
   const resp = await fetch(`${url}/updateTask`, {
     method: 'PATCH',
     headers: headersOption,
@@ -153,7 +153,7 @@ const enterChange = async(inputTask, id) => {
 }
 
 const onChangeCheckbox = async (idItem, isChecked) => {
-  const resp = await fetch(`${url}/UpdateTask`, {
+  const resp = await fetch(`${url}/updateTask`, {
     method: 'PATCH',
     headers: headersOption,
     body: JSON.stringify({
@@ -163,18 +163,13 @@ const onChangeCheckbox = async (idItem, isChecked) => {
   });
 
   if(resp) {
-    allTasks = allTasks.map(item => {
-      const newTask = {...item}
-      if(item._id === idItem) {
-        newTask.isCheck = !isChecked;
-      }
+    allTasks = []
       return newTask;
-    });
-  };
+    };
   render();
 };
 
-const onDeleteTask = async id => { 
+const onDeleteTask = async (id) => { 
   const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
     method: 'DELETE', 
   });   
