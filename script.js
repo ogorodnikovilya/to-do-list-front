@@ -8,38 +8,47 @@ const headersOption = {
 };
 
 window.onload = async() => {
-  const resp = await fetch(`${url}/allTasks`, {
-    method: 'GET'
-  });
-  const result = await resp.json();
-  allTasks = result.data;
-  render();
+  try {
+    const resp = await fetch(`${url}/allTasks`, {
+      method: 'GET'
+    });
+    const result = await resp.json();
+    allTasks = result.data;
+    render();
+  } catch (error) {
+    alert(error.message)
+  }
 };
 
 const addTask = async () => {
   inputEnterTask = document.querySelector(".todo-list__input-value");
   textTask = inputEnterTask.value;
 
-  if (textTask.length > 0) {
-    const resp = await fetch(`${url}/createTask`, {
-      method: 'POST',
-      headers: headersOption,
-      body: JSON.stringify({
-        text: textTask,
-        isCheck: false
+  if (textTask.trim() === '') {
+    inputEnterTask.value = "";
+    return alert("Вы ввели пустую задачу");
+  }
+  try {
+      const resp = await fetch(`${url}/createTask`, {
+        method: 'POST',
+        headers: headersOption,
+        body: JSON.stringify({
+          text: textTask,
+          isCheck: false
+        })
+      });
+  
+      await resp.json().then(resp => {
+        allTasks.push(resp);
+        render();
+  
+        textTask = "";
+        inputEnterTask.value = "";
       })
-    });
-
-    await resp.json().then(resp => {
-      allTasks.push(resp);
-      render();
-
-      textTask = "";
-      inputEnterTask.value = "";
-    })
-  } else {
-    alert("Вы ввели пустую задачу");
-  };
+    
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 const render = () => {
@@ -49,8 +58,9 @@ const render = () => {
     list.removeChild(list.firstChild);
   };
 
-  allTasks
-    .sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0)
+  const sortAllTasks = allTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
+
+  sortAllTasks
     .forEach(el => {
       const {text, isCheck, _id} = el;
 
@@ -99,7 +109,13 @@ const render = () => {
         onChangeValue(_id, text);
         buttons.removeChild(edit);
       };
-
+      
+      /*
+        Стрелочные функции лучше всего показывают себя там, где нужно привязать this к контексту, а не к самой функции.
+        Если говорить простыми словами, то, помимо упрощенного синтаксиса и возможности неявного возращения со стороны стрелочной функции, 
+        в классическом выражении функции, ключевое слово this привязывается к различным значениям, в зависимости от контекста, в котором оно вызвано. 
+        В стрелочных функциях, ключ this – лексически привязан. Другими словами, this используется из той части кода, в которой содержится стрелочная функция.
+      */
       check.onclick = () => {
         onChangeCheckbox(_id, isCheck);
       };
@@ -134,66 +150,68 @@ const onChangeValue = (id, text) => {
 PUT-запроса, если мы не передаем какое-то из полей в очередном запросе, то это поле будет удалено из БД
 */
 const saveChange = async(inputTask, id) => {
-  const resp = await fetch(`${url}/updateTask`, {
-    method: 'PATCH',
-    headers: headersOption,
-    body: JSON.stringify({
-      text: inputTask.value,
-      _id: id
-    })
-  });
-
-  if(resp) {
-    allTasks = allTasks.map(item => {
-      const newTask = {...item};
-      if(item._id === id) {
-        newTask.text = inputTask.value;
-      }
-      return newTask; 
+  try {
+    const resp = await fetch(`${url}/updateTask`, {
+      method: 'PATCH',
+      headers: headersOption,
+      body: JSON.stringify({
+        text: inputTask.value,
+        _id: id
+      })
     });
+  
+    const response = await resp.json();
+    allTasks = response;
+    render();
+  } catch (error) {
+    alert(error.message);
   }
-  render();
 }
 
 const onChangeCheckbox = async (idItem, isChecked) => {
-  const resp = await fetch(`${url}/updateTask`, {
-    method: 'PATCH',
-    headers: headersOption,
-    body: JSON.stringify({
-      _id: idItem,
-      isCheck: !isChecked
-    })
-  });
-
-  if(resp) {
-    allTasks = allTasks.map(item => {
-      const newTask = {...item};
-      if(item._id === idItem) {
-        newTask.isCheck = !isChecked;
-      }
-      return newTask;
+  try {
+    const resp = await fetch(`${url}/updateTask`, {
+      method: 'PATCH',
+      headers: headersOption,
+      body: JSON.stringify({
+        _id: idItem,
+        isCheck: !isChecked
+      })
     });
-  };
-  render();
+  
+    const response = await resp.json();
+    allTasks = response;
+    render();
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 const onDeleteTask = async (id) => { 
-  const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
-    method: 'DELETE', 
-  });   
-  const response = await resp.json();
-  allTasks = response;
-  render();
+  try {
+    const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
+      method: 'DELETE', 
+    });   
+    const response = await resp.json();
+    allTasks = response;
+    render();
+  } catch (error) {
+   alert(error.message);
+  }
 };
 
 const deleteAllTasks = async () => {
-  const resp = await fetch(`${url}/deleteAllTask`, {
-    method: 'DELETE',
-    headers: headersOption
-  });
-  
-  if(resp){
-    allTasks = [];
-  };
-  render();
+  try {
+    const resp = await fetch(`${url}/deleteAllTask`, {
+      method: 'DELETE',
+      headers: headersOption
+    });
+    
+    if(resp){
+      allTasks = [];
+    };
+    render();
+  } catch (error) {
+    alert(error.message);
+  }
 };
