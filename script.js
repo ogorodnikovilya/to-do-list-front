@@ -13,41 +13,46 @@ window.onload = async() => {
       method: 'GET'
     });
     const result = await resp.json();
-    allTasks = result.data;
-    render();
+
+    if (resp.status !== 404) {
+      allTasks = result.data;
+      render();
+    } else {
+      throw new Error(result.message);
+    }
   } catch (error) {
-    alert(error.message)
+    alert(error);
   }
 };
 
 const addTask = async () => {
   inputEnterTask = document.querySelector(".todo-list__input-value");
-  textTask = inputEnterTask.value;
 
-  if (textTask.trim() === '') {
+  if (inputEnterTask.value.trim() === '') {
     inputEnterTask.value = "";
     return alert("Вы ввели пустую задачу");
   }
+
   try {
-      const resp = await fetch(`${url}/createTask`, {
-        method: 'POST',
-        headers: headersOption,
-        body: JSON.stringify({
-          text: textTask,
-          isCheck: false
-        })
-      });
-  
-      await resp.json().then(resp => {
-        allTasks.push(resp);
-        render();
-  
-        textTask = "";
-        inputEnterTask.value = "";
+    const resp = await fetch(`${url}/createTask`, {
+      method: 'POST',
+      headers: headersOption,
+      body: JSON.stringify({
+        text: inputEnterTask.value,
+        isCheck: false
       })
-    
+    });
+    const result = await resp.json();
+      
+    if (resp.status !== 404) {
+      allTasks.push(result);
+      inputEnterTask.value = "";
+      render();
+    } else {
+      throw new Error(result.message);
+    }
   } catch (error) {
-    alert(error.message);
+    alert(error);
   }
 };
 
@@ -58,7 +63,9 @@ const render = () => {
     list.removeChild(list.firstChild);
   };
 
-  const sortAllTasks = allTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
+  const sortAllTasks = structuredClone(allTasks);
+
+  sortAllTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
 
   sortAllTasks
     .forEach(el => {
@@ -143,7 +150,6 @@ const onChangeValue = (id, text) => {
   doneButton.onclick = () => {
     saveChange(inputTask, id)
   };
-
 };
 
 /*Используются PATCH-запросы потому, что PATCH-запросы позволяют изменять отдельные поля в объекте, не меняя те поля, которые мы не передаем, в случае же
@@ -151,7 +157,7 @@ PUT-запроса, если мы не передаем какое-то из п�
 */
 const saveChange = async(inputTask, id) => {
   try {
-    const resp = await fetch(`${url}/updateTask`, {
+    const resp = await fetch(`${url}/updateTaskText`, {
       method: 'PATCH',
       headers: headersOption,
       body: JSON.stringify({
@@ -159,18 +165,22 @@ const saveChange = async(inputTask, id) => {
         _id: id
       })
     });
-  
     const response = await resp.json();
-    allTasks = response;
-    render();
+
+    if (resp.status !== 404) {
+      allTasks = response;
+      render();
+    } else {
+      throw new Error(response.message);
+    }
   } catch (error) {
-    alert(error.message);
+    alert(error);
   }
 }
 
 const onChangeCheckbox = async (idItem, isChecked) => {
   try {
-    const resp = await fetch(`${url}/updateTask`, {
+    const resp = await fetch(`${url}/updateTaskCheck`, {
       method: 'PATCH',
       headers: headersOption,
       body: JSON.stringify({
@@ -178,12 +188,16 @@ const onChangeCheckbox = async (idItem, isChecked) => {
         isCheck: !isChecked
       })
     });
-  
     const response = await resp.json();
-    allTasks = response;
-    render();
+  
+    if (resp.status !== 404) {
+      allTasks = response;
+      render();
+    } else {
+      throw new Error(response.message);
+    }
   } catch (error) {
-    alert(error.message);
+    alert(error);
   }
 };
 
@@ -191,12 +205,17 @@ const onDeleteTask = async (id) => {
   try {
     const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
       method: 'DELETE', 
-    });   
+    });
     const response = await resp.json();
-    allTasks = response;
-    render();
+
+    if (resp.status !== 404) {
+      allTasks = allTasks.filter((item) => id !== item._id);
+      render();
+    } else {
+      throw new Error(response.message);
+    }
   } catch (error) {
-   alert(error.message);
+   alert(error);
   }
 };
 
@@ -206,12 +225,15 @@ const deleteAllTasks = async () => {
       method: 'DELETE',
       headers: headersOption
     });
-    
-    if(resp){
+    const result = await resp.json();
+
+    if (resp.status !== 404) {
       allTasks = [];
+      render();
+    } else {
+      throw new Error(result.message);
     };
-    render();
   } catch (error) {
-    alert(error.message);
+    alert(error);
   }
 };
