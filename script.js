@@ -14,12 +14,8 @@ window.onload = async() => {
     });
     const result = await resp.json();
 
-    if (resp.status !== 404) {
-      allTasks = result.data;
-      render();
-    } else {
-      throw new Error(result.message);
-    }
+    allTasks = result.data;
+    render();
   } catch (error) {
     alert(error);
   }
@@ -44,13 +40,9 @@ const addTask = async () => {
     });
     const result = await resp.json();
       
-    if (resp.status !== 404) {
-      allTasks.push(result);
-      inputEnterTask.value = "";
-      render();
-    } else {
-      throw new Error(result.message);
-    }
+    allTasks.push(result);
+    inputEnterTask.value = "";
+    render();
   } catch (error) {
     alert(error);
   }
@@ -63,7 +55,8 @@ const render = () => {
     list.removeChild(list.firstChild);
   };
 
-  const sortAllTasks = allTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
+  const sortAllTasks = structuredClone(allTasks); 
+  sortAllTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
 
   sortAllTasks.forEach(el => {
     const {text, isCheck, _id} = el;
@@ -107,7 +100,7 @@ const render = () => {
       buttons.appendChild(check);
       buttons.appendChild(edit);
       buttons.appendChild(deleteBtn);
-    }
+    };
 
     edit.onclick = () => {
       onChangeValue(_id, text);
@@ -115,7 +108,7 @@ const render = () => {
     };
     
     /*
-    Использую стрелочные функции, потому что использую их контекст в области видимости, не выходящей за пределы самих функций
+    Использую стрелочные функции, они работают в контексте включающей их области видимости, то есть — в контексте функции или другого кода, в котором они объявлены. Говоря лично о моем использовании стрелочных функций, то мне предпочтительнее их использовать не только из-за упрощенного синтаксиса и возможности неявного возвращения из функции, но и из-за того, что контекст стрелочной функции может совпадать с контекстом создавшей ее функции, что дает стрелочной доступ к списку аргументов, переданной этой функции.
     */
     check.onclick = () => {
       onChangeCheckbox(_id, isCheck);
@@ -142,7 +135,7 @@ const onChangeValue = (id, text) => {
   buttons.appendChild(doneButton);
 
   doneButton.onclick = () => {
-    saveChange(inputTask, id)
+    saveChange(inputTask, id);
   };
 };
 
@@ -161,15 +154,15 @@ const saveChange = async(inputTask, id) => {
     });
     const response = await resp.json();
 
-    if (resp.status !== 404) {
-      allTasks = response;
-      render();
-    } else {
-      throw new Error(response.message);
-    }
+    allTasks.forEach(el => {
+      if (response._id === el._id) {
+        el.text = response.text;
+      };
+    });
+    render();
   } catch (error) {
     alert(error);
-  }
+  };
 }
 
 const onChangeCheckbox = async (idItem, isChecked) => {
@@ -183,51 +176,38 @@ const onChangeCheckbox = async (idItem, isChecked) => {
       })
     });
     const response = await resp.json();
-  
-    if (resp.status !== 404) {
-      allTasks = response;
-      render();
-    } else {
-      throw new Error(response.message);
-    }
+
+    allTasks = response;
+    render();
   } catch (error) {
     alert(error);
-  }
+  };
 };
 
 const onDeleteTask = async (id) => { 
   try {
-    const resp = await fetch(`${url}/deleteTask/?id=${id}`, {
+    await fetch(`${url}/deleteTask/?id=${id}`, {
       method: 'DELETE', 
     });
-    const response = await resp.json();
 
-    if (resp.status !== 404) {
-      allTasks = allTasks.filter((item) => id !== item._id);
-      render();
-    } else {
-      throw new Error(response.message);
-    }
+    allTasks = allTasks.filter((item) => id !== item._id);
+    render();
+
   } catch (error) {
    alert(error);
-  }
+  };
 };
 
 const deleteAllTasks = async () => {
   try {
-    const resp = await fetch(`${url}/deleteAllTask`, {
+    await fetch(`${url}/deleteAllTask`, {
       method: 'DELETE',
       headers: headersOption
     });
-    const result = await resp.json();
 
-    if (resp.status !== 404) {
-      allTasks = [];
-      render();
-    } else {
-      throw new Error(result.message);
-    };
+    allTasks = [];
+    render();
   } catch (error) {
     alert(error);
-  }
+  };
 };

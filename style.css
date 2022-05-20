@@ -48,8 +48,8 @@ body {
   height: 35px;
 }
 
-.todo-list__btn-add,
-.todo-list__del {
+.todo-list__button-add,
+.todo-list__delete {
   border-radius: 10px;
   background: silver;
   padding: 10%;
