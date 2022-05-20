@@ -1,6 +1,4 @@
 let allTasks = [];
-let inputEnterTask = null;
-let textTask = "";
 const url = 'http://localhost:8080';
 const headersOption = {
   'Content-type':'application/json;charset=utf-8',
@@ -18,11 +16,11 @@ window.onload = async() => {
     render();
   } catch (error) {
     alert(error);
-  }
+  };
 };
 
 const addTask = async () => {
-  inputEnterTask = document.querySelector(".todo-list__input-value");
+  const inputEnterTask = document.querySelector(".todo-list__input-value");
 
   if (inputEnterTask.value.trim() === '') {
     inputEnterTask.value = "";
@@ -45,7 +43,7 @@ const addTask = async () => {
     render();
   } catch (error) {
     alert(error);
-  }
+  };
 };
 
 const render = () => {
@@ -56,68 +54,69 @@ const render = () => {
   };
 
   const sortAllTasks = structuredClone(allTasks); 
-  sortAllTasks.sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0);
 
-  sortAllTasks.forEach(el => {
-    const {text, isCheck, _id} = el;
+  sortAllTasks
+    .sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0)
+    .forEach(el => {
+      const {text, isCheck, _id} = el;
 
-    const block = document.createElement("div");
-    const textInTask = document.createElement("div");
-    const buttons = document.createElement("div");
-    const check = document.createElement("input");
-    const deleteBtn = document.createElement("button");
-    const edit = document.createElement("button");
-    block.id = `block-${_id}`;
-    buttons.id = `buttons-${_id}`;
+      const block = document.createElement("div");
+      const textInTask = document.createElement("div");
+      const buttons = document.createElement("div");
+      const check = document.createElement("input");
+      const deleteBtn = document.createElement("button");
+      const edit = document.createElement("button");
+      block.id = `block-${_id}`;
+      buttons.id = `buttons-${_id}`;
 
-    buttons.classList.add("todo__buttons");
+      buttons.classList.add("todo__buttons");
 
-    check.type = "checkbox";
-    check.checked = isCheck;
-    check.classList.add("todo__complete");
+      check.type = "checkbox";
+      check.checked = isCheck;
+      check.classList.add("todo__complete");
 
-    edit.classList.add("todo__changed");
-    edit.innerText = "Редактировать";
+      edit.classList.add("todo__changed");
+      edit.innerText = "Редактировать";
 
-    deleteBtn.classList.add("todo__delete");
-    deleteBtn.innerText = "Удалить";
+      deleteBtn.classList.add("todo__delete");
+      deleteBtn.innerText = "Удалить";
 
-    textInTask.classList.add("todo__text");
-    textInTask.innerText = text;
+      textInTask.classList.add("todo__text");
+      textInTask.innerText = text;
 
-    list.appendChild(block);
-    block.appendChild(textInTask);
-    block.appendChild(buttons);
-    buttons.appendChild(check);
-    buttons.appendChild(edit);
-    buttons.appendChild(deleteBtn);
-
-    block.className = isCheck ? "todo__item checked" : "todo__item";
-
-    if (isCheck) {
-      buttons.removeChild(edit);
-    } else {
+      list.appendChild(block);
+      block.appendChild(textInTask);
+      block.appendChild(buttons);
       buttons.appendChild(check);
       buttons.appendChild(edit);
       buttons.appendChild(deleteBtn);
-    };
 
-    edit.onclick = () => {
-      onChangeValue(_id, text);
-      buttons.removeChild(edit);
-    };
-    
-    /*
-    Использую стрелочные функции, они работают в контексте включающей их области видимости, то есть — в контексте функции или другого кода, в котором они объявлены. Говоря лично о моем использовании стрелочных функций, то мне предпочтительнее их использовать не только из-за упрощенного синтаксиса и возможности неявного возвращения из функции, но и из-за того, что контекст стрелочной функции может совпадать с контекстом создавшей ее функции, что дает стрелочной доступ к списку аргументов, переданной этой функции.
-    */
-    check.onclick = () => {
-      onChangeCheckbox(_id, isCheck);
-    };
+      block.className = isCheck ? "todo__item checked" : "todo__item";
 
-    deleteBtn.onclick = () => {
-      onDeleteTask(_id);
-    };
-  });
+      if (isCheck) {
+        buttons.removeChild(edit);
+      } else {
+        buttons.appendChild(check);
+        buttons.appendChild(edit);
+        buttons.appendChild(deleteBtn);
+      };
+
+      edit.onclick = () => {
+        onChangeValue(_id, text);
+        buttons.removeChild(edit);
+      };
+      
+      /*
+      Использую стрелочные функции, они работают в контексте включающей их области видимости, то есть — в контексте функции или другого кода, в котором они объявлены. Говоря лично о моем использовании стрелочных функций, то мне предпочтительнее их использовать не только из-за упрощенного синтаксиса и возможности неявного возвращения из функции, но и из-за того, что контекст стрелочной функции может совпадать с контекстом создавшей ее функции, что дает стрелочной доступ к списку аргументов, переданной этой функции.
+      */
+      check.onclick = () => {
+        onChangeCheckbox(_id, isCheck);
+      };
+
+      deleteBtn.onclick = () => {
+        onDeleteTask(_id);
+      };
+    });
 };
 
 const onChangeValue = (id, text) => {
@@ -163,7 +162,7 @@ const saveChange = async(inputTask, id) => {
   } catch (error) {
     alert(error);
   };
-}
+};
 
 const onChangeCheckbox = async (idItem, isChecked) => {
   try {
@@ -194,7 +193,7 @@ const onDeleteTask = async (id) => {
     render();
 
   } catch (error) {
-   alert(error);
+    alert(error);
   };
 };
 
