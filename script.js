@@ -21,28 +21,33 @@ window.onload = async() => {
 
 const addTask = async () => {
   const inputEnterTask = document.querySelector(".todo-list__input-value");
-
-  if (inputEnterTask.value.trim() === '') {
-    inputEnterTask.value = "";
-    return alert("Вы ввели пустую задачу");
-  }
-
-  try {
-    const resp = await fetch(`${url}/createTask`, {
-      method: 'POST',
-      headers: headersOption,
-      body: JSON.stringify({
-        text: inputEnterTask.value,
-        isCheck: false
-      })
-    });
-    const result = await resp.json();
-      
-    allTasks.push(result);
-    inputEnterTask.value = "";
-    render();
-  } catch (error) {
-    alert(error);
+  
+  if (inputEnterTask !== null) {
+    if (inputEnterTask.value.trim() === '') {
+      inputEnterTask.value = "";
+      alert("Вы ввели пустую задачу");
+      return;
+    }
+  
+    try {
+      const resp = await fetch(`${url}/createTask`, {
+        method: 'POST',
+        headers: headersOption,
+        body: JSON.stringify({
+          text: inputEnterTask.value,
+          isCheck: false
+        })
+      });
+      const result = await resp.json();
+        
+      allTasks.push(result);
+      inputEnterTask.value = "";
+      render();
+    } catch (error) {
+      alert(error);
+    };
+  } else {
+    alert('Поле ввода не обнаружено');
   };
 };
 
@@ -53,7 +58,7 @@ const render = () => {
     list.removeChild(list.firstChild);
   };
 
-  const sortAllTasks = structuredClone(allTasks); 
+  const sortAllTasks = [...allTasks]; 
 
   sortAllTasks
     .sort((a, b) => a.isCheck > b.isCheck ? 1 : a.isCheck < b.isCheck ? -1 : 0)

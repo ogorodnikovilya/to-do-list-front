@@ -53,6 +53,7 @@ body {
   border-radius: 10px;
   background: silver;
   padding: 10%;
+  cursor: pointer;
 }
 
 .todo-list__buttons-group button:first-child {
@@ -93,6 +94,7 @@ body {
   background: silver;
   padding: 2%;
   margin: 0 4%;
+  cursor: pointer;
 }
 
 .todo__text {
