@@ -12,42 +12,37 @@ window.onload = async() => {
     });
     const result = await resp.json();
 
-    allTasks = result.data;
+    allTasks = result;
     render();
   } catch (error) {
-    alert(error);
+    alert('Ошибка загрузки задач');
   };
 };
 
 const addTask = async () => {
   const inputEnterTask = document.querySelector(".todo-list__input-value");
   
-  if (inputEnterTask !== null) {
-    if (inputEnterTask.value.trim() === '') {
-      inputEnterTask.value = "";
-      alert("Вы ввели пустую задачу");
-      return;
-    }
-  
-    try {
-      const resp = await fetch(`${url}/createTask`, {
-        method: 'POST',
-        headers: headersOption,
-        body: JSON.stringify({
-          text: inputEnterTask.value,
-          isCheck: false
-        })
-      });
-      const result = await resp.json();
-        
-      allTasks.push(result);
-      inputEnterTask.value = "";
-      render();
-    } catch (error) {
-      alert(error);
-    };
-  } else {
-    alert('Поле ввода не обнаружено');
+  if (inputEnterTask.value.trim() === '' || inputEnterTask === null) {
+    inputEnterTask.value = "";
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${url}/createTask`, {
+      method: 'POST',
+      headers: headersOption,
+      body: JSON.stringify({
+        text: inputEnterTask.value,
+        isCheck: false
+      })
+    });
+    const result = await resp.json();
+      
+    allTasks.push(result);
+    inputEnterTask.value = "";
+    render();
+  } catch (error) {
+    alert('Ошибка добавления задачи');
   };
 };
 
@@ -165,7 +160,7 @@ const saveChange = async(inputTask, id) => {
     });
     render();
   } catch (error) {
-    alert(error);
+    alert('Ошибка изменения задачи');
   };
 };
 
@@ -184,7 +179,7 @@ const onChangeCheckbox = async (idItem, isChecked) => {
     allTasks = response;
     render();
   } catch (error) {
-    alert(error);
+    alert('Ошибка изменения задачи');
   };
 };
 
@@ -198,7 +193,7 @@ const onDeleteTask = async (id) => {
     render();
 
   } catch (error) {
-    alert(error);
+    alert('Ошибка удаления задачи');
   };
 };
 
@@ -212,6 +207,6 @@ const deleteAllTasks = async () => {
     allTasks = [];
     render();
   } catch (error) {
-    alert(error);
+    alert('Ошибка удаления всех задач');
   };
 };
