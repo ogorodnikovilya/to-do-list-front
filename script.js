@@ -22,7 +22,7 @@ window.onload = async() => {
 const addTask = async () => {
   const inputEnterTask = document.querySelector(".todo-list__input-value");
   
-  if (inputEnterTask.value.trim() === '' || inputEnterTask === null) {
+  if (inputEnterTask === null || inputEnterTask.value.trim() === '') {
     inputEnterTask.value = "";
     return;
   }
