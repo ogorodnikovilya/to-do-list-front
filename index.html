@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>To Do List</title>
+  </head>
+  <body>
+    <main>
+      <div class="wrapper">
+        <div class="todo-list">
+          <div class="todo-list__add">
+            <div class="todo-list__entry-field">
+              <input class="todo-list__input-value">
+            </div>
+            <div class="todo-list__buttons-group">
+              <button class="todo-list__button-add" onclick="addTask()">Добавить</button>
+              <button class="todo-list__delete" onclick="deleteAllTasks()">Удалить все</button>
+            </div>
+          </div>
+        </div>
+        <div class="todo__items">
+        </div>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
